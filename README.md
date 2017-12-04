@@ -21,5 +21,52 @@ EvoTanks will be a cross between a basic 2d tank game (https://www.tanktrouble.c
  ## Wireframes 
  
  The app wll consist of a single screen. Most of the space will be taken up by the actual arena. On the side the given parameters for each tank will be displayed. Below will be an explanation of what is going on. 
+ ![EvoTanks](https://raw.githubusercontent.com/jcompagni10/EvoTank/master/Web%201920%20%E2%80%93%201.png)
+ 
+## Technologies and Architecture
+ + Game Logic written in vanilla JS
+ + DOM manipulation with jquery  
+ + Webpack to handle bundling 
+ 
+ `game.js` Handles all game logic, frame by frame movement and collision detection
+ `map.js` handles map creation and and stores all elements
+ `tank.js` handles all tank physics and movement
+ `bullet.js` handle bullet movement
+ `tankAIController.js` handles actual control of the tank based on given genetic traits
+ `tankUserController.js` class to allow user control of tank
+ `eveolution.js` handles evolution logic for tanks
+ 
+ ## Timeline
+ 
+ ### Over the weekend
+ + Build tank phyics
+ + Build player controller for tanks 
+ + Start artificial map generation 
+ 
+ ### Monday 
+ + Finish artificial map generation
+ 
+ ### Tuesday
+ + Write tank pathfinding AI
+ + Start on bullet detection AI
+ 
+ ### Wednesday 
+ + Build tank agressiveness parameters 
+ + Finsih base tank AI
+ + Experiment with different parameters
+ 
+ ### Thursday
+ + Build tank genetic inheritance 
+ 
+ 
+ ### Friday
+ + Finish stuff up 
+ + Test
+ + Make it pretty
+ 
+ 
+ 
+ 
+
  
  
