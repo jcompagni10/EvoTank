@@ -1,4 +1,6 @@
-class KeyboardController2 {
+import $ from 'jquery';
+
+export default class KeyboardController1 {
   constructor(keys){
     this.keys = keys;
     $(window).keydown(this.handleKeyDown.bind(this));
@@ -6,22 +8,21 @@ class KeyboardController2 {
   }
   //maybe block simultaneous up/down left/right
   handleKeyDown(e){
-    console.log(e.which);
     let key = e.which;
     switch(key){
-      case 38:
-        $.extend(this.keys, {up: true});
+      case 87:
+      $.extend(this.keys, {up: true, down: false});
         break;
-      case 39:
+      case 68:
       $.extend(this.keys, {right: true});
         break;
-      case 37:
+      case 65:
       $.extend(this.keys, {left: true});
         break;
-      case 40:
-      $.extend(this.keys, {down: true});
+      case 83:
+      $.extend(this.keys, {down: true, up: false});
         break;
-      case 32:
+      case 84:
       $.extend(this.keys, {shoot: true});
         break;
     }
@@ -30,22 +31,21 @@ class KeyboardController2 {
   handleKeyUp(e){
     let key = e.which;
     switch(key){
-      case 38:
-        $.extend(this.keys, {up: false});
+      case 87:
+      $.extend(this.keys, {up: false});
         break;
-      case 39:
+      case 68:
       $.extend(this.keys, {right: false});
         break;
-      case 37:
+      case 65:
       $.extend(this.keys, {left: false});
         break;
-      case 40:
+      case 83:
       $.extend(this.keys, {down: false});
         break;
-      case 32:
+      case 84:
       $.extend(this.keys, {shoot: false});
         break;
     }
   }
 }
-export default KeyboardController2;

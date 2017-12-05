@@ -1,9 +1,9 @@
 var path = require('path');
 
 module.exports = {
-  entry: './js/main.jsx',
+  entry: './evoTanks/app.js',
   output: {
-    filename: './bundle.js',
+    filename: './evoTanks/bundle.js',
   },
   module: {
     loaders: [
@@ -12,13 +12,13 @@ module.exports = {
         exclude: /(node_modules)/,
         loader: 'babel-loader',
         query: {
-          presets: ['es2017', 'react']
+          presets: ['es2017']
         }
       }
     ]
   },
   devtool: 'source-map',
   resolve: {
-    extensions: ['.js', '.jsx', '*']
+    extensions: ['.js', '*']
   }
 };

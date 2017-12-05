@@ -1,0 +1,21 @@
+#map{
+  width: 700px;
+  height: 700px;
+  border: 8px solid #000;
+  position: relative;
+}
+
+.cell{
+  float: left;
+  width: 140px;
+  box-sizing: border-box;
+  height: 140px;
+}
+
+.cell.horiz{
+  border-bottom: 8px solid #000;
+}
+
+.cell.vert{
+  border-right: 8px solid #000;
+}

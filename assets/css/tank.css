@@ -1,0 +1,13 @@
+.tank{
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background-size: 80px 80px;
+}
+
+.tank.red{
+  background-image: url(../img/redTank.png)
+}
+.tank.blue{
+  background-image: url(../img/blueTank.png)
+}
