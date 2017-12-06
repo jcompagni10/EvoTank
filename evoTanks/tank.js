@@ -7,7 +7,7 @@ import $ from 'jquery';
 
 
 export default class Tank {
-  constructor({id, speed, xPos, yPos, dir, detectCollision, generateBullet, grid}){
+  constructor({id, speed, xPos, yPos, dir, detectCollision, generateBullet, map}){
     this.xPos = xPos;
     this.yPos = yPos;
     this.dir = dir;
@@ -21,12 +21,14 @@ export default class Tank {
     this.detectCollision = detectCollision;
     this.generateBullet = generateBullet;
     this.fireInterval = 0;
-    this.grid = grid;
+    this.map = map;
 
-    // setInterval(this.move.bind(this), 50);
+
+  //ensure initialize bebfore AI setup
     if (this.id === 0){
-      const controller = new AIController(this, this.actions, this.grid);
-      window.controller = controller;
+      setTimeout(()=>{
+        const controller = new AIController(this, this.actions, this.map);
+      }, 1000);
     }else{
       const controller = new KeyboardController2(this.actions);
     }

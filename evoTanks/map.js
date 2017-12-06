@@ -45,7 +45,7 @@ export default class Map{
       xPos:20,
       yPos: 20,
       dir: 0,
-      grid: this.grid,
+      map: this,
       detectCollision: this.detectCollision.bind(this),
       generateBullet: this.generateBullet.bind(this)
     });

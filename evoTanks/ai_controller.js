@@ -1,18 +1,63 @@
 import {distance} from './util.js';
 import merge from 'lodash/merge';
+import PathFinder from './pathFinder/path_finder';
 
 export default class AIController{
-  constructor(tank, actions, grid){
+  constructor(tank, actions, map){
     this.tank = tank;
     this.actions = actions;
-    this.state = "idle";
-    this.grid = grid;
+    this.state = "IDLE";
     this.handlerInterval = setInterval(this.handler.bind(this), 20);
+    this.resolution = map.resolution;
+    this.grid = {horiz: map.horizWalls, vert: map.vertWalls};
+    this.waypoints = [];
+    this.map = map;
+    this.opTank = this.map.tanks[1];
+  }
+
+
+  tankCell(tank){
+    return [Math.floor(tank.xPos/this.resolution),
+      Math.floor(tank.yPos/this.resolution)];
+  }
+
+  cellToCoords(cell){
+    return cell.map((pt)=>(
+      pt * this.resolution + this.resolution/2
+    ));
+  }
+
+  nextWaypoint(){
+    let curWaypoint = this.waypoints.shift();
+    if (curWaypoint){
+      let coords = this.cellToCoords(curWaypoint);
+      this.targetX = coords[0];
+      this.targetY = coords[1];
+      this.rotate();
+    }
+    else{
+      const pf = new PathFinder(this.grid);
+      this.waypoints = pf.getWaypoints(this.tankCell(this.tank),
+        this.tankCell(this.opTank));
+    }
   }
 
   handler(){
-    let goto= [2,2];
-    if (this.state === "idle"){
+    switch(this.state){
+    case "IDLE":
+      this.nextWaypoint();
+      break;
+    case "ROTATING":
+      this.executeRotation();
+      break;
+    case "ROTATION_COMPLETE":
+      this.forward();
+      break;
+    case "MOVING":
+      this.executeForward();
+      break;
+    default:
+      debugger;
 
     }
   }
@@ -25,46 +70,46 @@ export default class AIController{
     return Math.atan2(xDist,-yDist) * 180/Math.PI % 360;
   }
 
-  rotateTo(pX, pY){
-    let targetDir = this.calcRotationAmt(pX, pY);
+  rotate(){
+    let targetDir = this.calcRotationAmt(this.targetX, this.targetY);
     if (targetDir < 0) {
       targetDir = 360 + targetDir;
     }
-    let action = "right";
-    if (this.tank.dir > targetDir){
+
+    // TODO: rotate shortest direction
+    let action = "left";
+    if (targetDir > this.tank.dir && targetDir < (this.tank.dir+180)%360){
       action = "right";
     }
     merge(this.actions, {[action]: true });
-    return this.executeRotation(targetDir, action);
+    this.state = "ROTATING";
+    this.targetDir = targetDir;
+    this.action = action;
   }
 
-  executeRotation(targetDir, action){
-    if (Math.abs(this.tank.dir-targetDir) > 6){
-      return false;
-    } else{
-      merge(this.actions, {[action]: false });
-      this.moving = false;
+  executeRotation(){
+    if (Math.abs(this.tank.dir-this.targetDir) <= 6){
+      merge(this.actions, {[this.action]: false });
+      this.state = "ROTATION_COMPLETE";
       return true;
     }
   }
 
-  forward(pX, pY){
+  forward(){
     merge(this.actions, {up: true});
-    this.executeForward(pX, pY);
-    this.moving= true;
+    this.executeForward();
+    this.state= "MOVING";
   }
 
 
-  executeForward(pX, pY){
+  executeForward(){
     let targetDistance =  distance(
       this.tank.xPos + this.tank.size/2,
-      this.tank.yPos + this.tank.size/2, pX, pY);
-      console.log(targetDistance);
-      if (targetDistance > 30){
-      setTimeout( ()=>this.executeForward(pX, pY), 10);
-    } else{
+      this.tank.yPos + this.tank.size/2, this.targetX, this.targetY
+    );
+    if (targetDistance <= 30){
       merge(this.actions, {up: false });
-      this.moving = false;
+      this.state = "IDLE";
     }
   }
 

@@ -1,13 +1,14 @@
 .tank{
   position: absolute;
-  width: 80px;
-  height: 80px;
-  background-size: 80px 80px;
+  width: 90px;
+  height: 90px;
+  background-size: 90px 90px;
+  transform: rotate(90deg);
 }
 
 .tank.red{
-  background-image: url(../img/redTank.png)
+  background-image: url(../img/redtank2.png)
 }
 .tank.blue{
-  background-image: url(../img/blueTank.png)
+  background-image: url(../img/bluetank2.png)
 }
