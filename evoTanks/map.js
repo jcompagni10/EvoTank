@@ -3,59 +3,82 @@ import $ from 'jquery';
 import Tank from './tank';
 import Bullet from './bullet';
 
+const TANKCOLORS = ["red", "blue"];
+
 export default class Map{
   constructor(size){
     this.size = size;
-    this.horizWalls = [...Array(this.size).keys()].map(i => Array(this.size));
-    this.vertWalls = [...Array(this.size).keys()].map(i => Array(this.size));
-    this.size = size;
     this.resolution = 140;
-    this.tanks = [];
-    this.setupMap();
-    this.createTank();
-    this.bullets = [];
     this.map = $("#map");
-    debugger
+    this.tanks = [];
+    this.bullets = new Set;
+    this.resetMap();
+    this.scores = [];
+    this.timer = setInterval(this.handleFrame.bind(this), 20);
+    this.map.append("<div class='dot'></dot");
   }
 
-  setupMap(){
+  resetMap(){
+    this.horizWalls = [...Array(this.size).keys()].map(i => Array(this.size));
+    this.vertWalls = [...Array(this.size).keys()].map(i => Array(this.size));
+    this.grid = {horiz: this.horizWalls, vert: this.vertWalls};
+    this.bullets.clear();
+    this.tanks = [];
     this.mapGen(0,0,this.size-1, this.size-1);
     this.drawMap();
     for(let i = 0; i < this.size; i++){
       this.vertWalls[this.size-1][i] = true;
       this.horizWalls[i][this.size-1] = true;
     }
-    this.placeTank();
-  }
-
-  placeTank(id){
-    this.map.append(`<div id='bullet${id}' class='tank red'></div>`);
+    this.createTank();
+    this.createTank();
   }
 
   createTank(){
+    let id = this.tanks.length;
+    this.map.append(
+      `<div id='tank${id}' class='tank ${TANKCOLORS[id]}'></div>`
+    );
     let tank = new Tank({
-      id: 1,
-      speed: 10,
+      id,
+      speed: 7,
       xPos:20,
       yPos: 20,
-      dir: 90,
-      detectCollision: this.detectCollision.bind(this)
-
+      dir: 0,
+      grid: this.grid,
+      detectCollision: this.detectCollision.bind(this),
+      generateBullet: this.generateBullet.bind(this)
     });
     this.tanks.push(tank);
   }
 
-  createBullet(x, y, dir){
-    let id = this.bullets.length;
-    let bullet = new Bullet(x,
-      y,
+  generateBullet(xPos, yPos, dir, tankId){
+    let id = this.bullets.size;
+    this.map.append(`<div id='bullet${id}' class='bullet'></div>`);
+    let bullet = new Bullet({
+      xPos,
+      yPos,
       dir,
-      this.detectCollision.bind(this),
-      id
-    );
-    this.map.append(`<div id='bullet${id}' class='tank red'></div>`);
+      detectCollision: this.detectCollision.bind(this),
+      id,
+      tankId
+    });
+    this.bullets.add(bullet);
   }
 
+  handleFrame(){
+    this.bullets.forEach(bullet=>{
+      if (bullet.life<= 0 ){
+        let tank = this.tanks[bullet.tankId];
+        tank.ammo ++;
+        bullet.destroy();
+        this.bullets.delete(bullet);
+      } else{
+        bullet.nextFrame();
+      }
+    });
+    this.tanks.forEach(tank=> tank.nextFrame());
+  }
   // maybe makes too many recursive calls?
   mapGen(aX, aY, bX, bY){
     const h = bX  - aX;
@@ -92,9 +115,9 @@ export default class Map{
   }
 
 
-  detectCollision(x,y,size){
-    if(x < 0) return "HORIZ_COLLISION";
-    if(y < 0) return "VERT_COLLISION";
+  detectCollision(x,y,size, isBullet){
+    if(x < 0) return "VERT_COLLISION";
+    if(y < 0) return "HORIZ_COLLISION";
 
     let xGridPos = [
       Math.floor(x/this.resolution),
@@ -104,11 +127,10 @@ export default class Map{
      Math.floor(y/this.resolution),
      Math.floor((y+size)/this.resolution)
     ];
-
     let collision;
     for(let i = 0; i < 2 && !collision; i++ ){
       for(let j = 0; j < 2 && !collision; j++ ){
-        collision = this.checkCollision(
+        collision = this.checkWallCollision(
           xGridPos[i],
           yGridPos[j],
           x,
@@ -117,22 +139,40 @@ export default class Map{
         );
       }
     }
+    if (isBullet) this.checkTankCollision(x,y,size);
     return collision;
   }
 
-  checkCollision(gridX, gridY, x, y, size){
-    if (this.vertWalls[gridX][gridY]){
-      let wall = this.resolution * (gridX+1);
-      if (x < wall && (x+size) > wall){
-        return "VERT_COLLISION";
+  checkWallCollision(gridX, gridY, x, y, size){
+    try{
+      if (this.vertWalls[gridX][gridY]){
+        let wall = this.resolution * (gridX+1);
+        if ((x+size) > (wall-2) && x < wall){
+          return "VERT_COLLISION";
+        }
+      }
+      if (this.horizWalls[gridX][gridY]){
+        let wall = this.resolution * (gridY + 1);
+        if ((y+size) > (wall-2) && y < wall){
+            return "HORIZ_COLLISION";
+          }
       }
     }
-    if (this.horizWalls[gridX][gridY]){
-      let wall = this.resolution * (gridY + 1);
-      if (y < wall && (y+size) > wall){
-          return "HORIZ_COLLISION";
-        }
+    catch(e){
+      // maybe delete bullet
     }
+  }
+
+  checkTankCollision(x,y,size){
+    this.tanks.forEach(tank=>{
+      if (tank.xPos < (x+size) && (tank.xPos + tank.size) > x
+        && tank.yPos < (y+size) && (tank.yPos + tank.size) > y ){
+          this.scores[tank.id]++;
+          console.log("COLLISION", tank.id);
+          debugger
+          this.resetMap();
+        }
+    });
   }
 
   drawMap(){

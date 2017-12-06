@@ -1,16 +1,18 @@
 import React from 'react';
 
-class Bullet extends React.Component{
-  constructor({xPos, yPos, dir, detectCollision, id}){
-    this.radius = 10;
-    this.speed = 15;
+export default class Bullet{
+  constructor({xPos, yPos, dir, detectCollision, id, tankId}){
+    this.size = 7;
+    this.speed = 6;
+    this.tankId = tankId;
     this.xPos = xPos;
     this.yPos= yPos;
     this.dir = dir;
-    this.interval = window.setInterval(this.move.bind(this), 50);
+    this.life = 500;
     this.detectCollision = detectCollision;
     this.id = id;
     this.ref = $(`#bullet${this.id}`);
+    this.render();
   }
 
 
@@ -22,42 +24,48 @@ class Bullet extends React.Component{
     };
   }
 
-
   move(){
-    // this.life -= 50;
-    // if (this.life <= 0 ){
-    //   window.clearInterval(this.interval);
-    //   this.setState({class: "hidden"})
-    // }
     let rad = this.dir * Math.PI / 180;
     let newX = this.xPos + Math.sin(rad)*this.speed;
     let newY = this.yPos - Math.cos(rad)*this.speed;
-    let collision = this.detectCollision;
+    this.xPos = newX;
+    this.yPos = newY;
+  }
+
+  nextFrame(){
+    this.life --;
+    let collision = this.detectCollision(
+      this.xPos,
+      this.yPos,
+      this.size,
+      true
+    );
+
     if (collision === "VERT_COLLISION"){
       this.bounceX();
     }
     if (collision === "HORIZ_COLLISION"){
       this.bounceY();
     }
-    this.setState({xPos: newX });
-    this.setState({yPos: newY });
+    this.move();
+    this.render();
   }
 
   bounceX(){
-    this.setState({dir: 360 - this.dir});
+    this.dir =360 - this.dir;
+    this.move();
   }
 
   bounceY(){
-    this.setState({dir: 180 - this.dir});
-  }
-
-  destroy(){
-
+    this.dir =180 - this.dir;
+    this.move();
   }
 
   render(){
     this.ref.css(this.css());
   }
-}
 
-export default Bullet;
+  destroy(){
+    this.ref.remove();
+  }
+}

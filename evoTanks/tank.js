@@ -1,32 +1,41 @@
 import KeyboardController1 from './keyboard_controller1';
 import KeyboardController2 from './keyboard_controller2';
+import AIController from './ai_controller';
+import PathFinder from './pathFinder/path_finder';
+
 import $ from 'jquery';
 
+
 export default class Tank {
-  constructor({id, speed, xPos, yPos, dir, detectCollision}){
+  constructor({id, speed, xPos, yPos, dir, detectCollision, generateBullet, grid}){
     this.xPos = xPos;
     this.yPos = yPos;
     this.dir = dir;
-    this.speed = speed;
+    this.speed = 4;
     this.id = id;
-    this.detectCollision = detectCollision;
-    this.keysDown = [];
+    this.actions = {};
     this.size = 80;
-    this.rotationAmount = 18;
+    this.rotationAmount = 6;
+    this.ammo = 1000;
     this.ref = $(`#tank${this.id}`);
+    this.detectCollision = detectCollision;
+    this.generateBullet = generateBullet;
+    this.fireInterval = 0;
+    this.grid = grid;
 
-    setInterval(this.move.bind(this), 50);
-    if (id === '1'){
-      const controller = new KeyboardController1(this.keysDown);
+    // setInterval(this.move.bind(this), 50);
+    if (this.id === 0){
+      const controller = new AIController(this, this.actions, this.grid);
+      window.controller = controller;
     }else{
-      const controller = new KeyboardController2(this.keysDown);
+      const controller = new KeyboardController2(this.actions);
     }
-    this.placeTank();
+    const pf = new PathFinder(this.grid);
+    window.pf = pf;
   }
 
-  placeTank(){
-    const map = $("#map");
-    map.append("<div id='tank1' class='tank red'></div>");
+  rad(){
+    return this.dir * Math.PI / 180;
   }
 
   css(){
@@ -38,35 +47,53 @@ export default class Tank {
   }
 
 
+  nextFrame(){
+    this.move();
+    this.handleShoot();
+    this.render();
+
+  }
+
+  handleShoot(){
+    if(this.fireInterval === 0 && this.actions.shoot && this.ammo > 0){
+      this.ammo --;
+      this.fireInterval = 10;
+      let turretX = this.xPos + this.size/2  + Math.sin(this.rad()) * this.size;
+      let turretY = this.yPos + this.size/2 - Math.cos(this.rad()) * this.size;
+      $(".dot").css({top: turretY+"px", left: turretX + "px"});
+
+      this.generateBullet(turretX, turretY, this.dir, this.id);
+    }
+    if (this.fireInterval > 0){
+      this.fireInterval --;
+    }
+  }
 
   move(){
-    let actions  = this.keysDown;
-    let speed  = this.speed;
-    let rad = this.dir * Math.PI / 180;
     // TODO: dry these up
-    if (actions.up){
+    const rad = this.rad();
+    if (this.actions.up){
       let newX = this.xPos + Math.sin(rad)*this.speed;
       let newY = this.yPos - Math.cos(rad)*this.speed;
       this.updatePos(newX, newY);
     }
-    if (actions.down){
+    if (this.actions.down){
       let newX = this.xPos - Math.sin(rad)*this.speed;
       let newY = this.yPos + Math.cos(rad)*this.speed;
       this.updatePos(newX, newY);
     }
-    if (actions.left){
+    if (this.actions.left){
       this.dir = (this.dir - this.rotationAmount);
+      if (this.dir < 0){
+        this.dir = 360 + this.dir;
+      }
     }
-    if (actions.right){
+    if (this.actions.right){
       this.dir = (this.dir + this.rotationAmount);
     }
-    if(actions.shoot && this.ammo > 0){
-      this.ammo --;
-      this.props.generateBullet(this.xPos,
-                                this.yPos,
-                                this.dir, this.ammo);
+    if (this.dir >= 360){
+      this.dir = this.dir%360;
     }
-    this.render();
   }
 
   updatePos(newX, newY){

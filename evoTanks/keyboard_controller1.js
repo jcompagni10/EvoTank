@@ -1,8 +1,8 @@
-import $ from 'jquery';
+import merge from 'lodash/merge';
 
 export default class KeyboardController1 {
-  constructor(keys){
-    this.keys = keys;
+  constructor(actions){
+    this.actions = actions;
     $(window).keydown(this.handleKeyDown.bind(this));
     $(window).keyup(this.handleKeyUp.bind(this));
   }
@@ -11,19 +11,19 @@ export default class KeyboardController1 {
     let key = e.which;
     switch(key){
       case 87:
-      $.extend(this.keys, {up: true, down: false});
+      merge(this.actions, {up: true, down: false});
         break;
       case 68:
-      $.extend(this.keys, {right: true});
+      merge(this.actions, {right: true});
         break;
       case 65:
-      $.extend(this.keys, {left: true});
+      merge(this.actions, {left: true});
         break;
       case 83:
-      $.extend(this.keys, {down: true, up: false});
+      merge(this.actions, {down: true, up: false});
         break;
       case 84:
-      $.extend(this.keys, {shoot: true});
+      merge(this.actions, {shoot: true});
         break;
     }
   }
@@ -32,19 +32,19 @@ export default class KeyboardController1 {
     let key = e.which;
     switch(key){
       case 87:
-      $.extend(this.keys, {up: false});
+      merge(this.actions, {up: false});
         break;
       case 68:
-      $.extend(this.keys, {right: false});
+      merge(this.actions, {right: false});
         break;
       case 65:
-      $.extend(this.keys, {left: false});
+      merge(this.actions, {left: false});
         break;
       case 83:
-      $.extend(this.keys, {down: false});
+      merge(this.actions, {down: false});
         break;
       case 84:
-      $.extend(this.keys, {shoot: false});
+      merge(this.actions, {shoot: false});
         break;
     }
   }
