@@ -40,6 +40,7 @@ export default class PathFinder{
   getWaypoints(start,target){
     let endNode = this.findPath(start,target);
     let waypoints = [];
+    if (!endNode) return [];
     let parent = endNode.parent;
     while (parent !== null){
       waypoints.unshift(parent.position);
@@ -58,7 +59,6 @@ export default class PathFinder{
       let newMoves = this.newMoves(curNode.position[0], curNode.position[1]);
       for (let i = 0; i < newMoves.length; i++ ){
         let move = newMoves[i];
-        console.log(move);
         let newNode = new PathNode(curNode, move);
         queue.push(newNode);
         if (move[0] === target[0] && move[1] === target[1]){

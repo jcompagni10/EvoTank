@@ -1,4 +1,4 @@
-import {rand} from "./util";
+import {rand, distance} from "./util";
 import $ from 'jquery';
 import Tank from './tank';
 import Bullet from './bullet';
@@ -121,11 +121,11 @@ export default class Map{
 
     let xGridPos = [
       Math.floor(x/this.resolution),
-      Math.floor((x+size)/this.resolution)
+      Math.floor((x+size/2)/this.resolution)
     ];
     let yGridPos = [
      Math.floor(y/this.resolution),
-     Math.floor((y+size)/this.resolution)
+     Math.floor((y+size/2)/this.resolution)
     ];
     let collision;
     for(let i = 0; i < 2 && !collision; i++ ){
@@ -147,16 +147,17 @@ export default class Map{
     try{
       if (this.vertWalls[gridX][gridY]){
         let wall = this.resolution * (gridX+1);
-        if ((x+size) > (wall-2) && x < wall){
+        console.log(wall-x)
+        if ((wall-x) < size/2 && (x-wall) < size/2){
           return "VERT_COLLISION";
         }
       }
-      if (this.horizWalls[gridX][gridY]){
-        let wall = this.resolution * (gridY + 1);
-        if ((y+size) > (wall-2) && y < wall){
-            return "HORIZ_COLLISION";
-          }
-      }
+      // if (this.horizWalls[gridX][gridY]){
+      //   let wall = this.resolution * (gridY + 1);
+      //   if ((y+size) > (wall-2) && y < wall){
+      //       return "HORIZ_COLLISION";
+      //     }
+      // }
     }
     catch(e){
       // maybe delete bullet

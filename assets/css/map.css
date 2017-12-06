@@ -1,3 +1,15 @@
+.container{
+  width: 100%;
+}
+
+.logo{
+  margin: 0 auto;
+  width: 200px;
+  display: block;
+  margin-bottom: 40px;
+  margin-top: 20px;
+}
+
 #map{
   width: 700px;
   height: 700px;

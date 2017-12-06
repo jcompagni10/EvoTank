@@ -1,8 +1,8 @@
 .tank{
   position: absolute;
-  width: 90px;
-  height: 90px;
-  background-size: 90px 90px;
+  width: 80px;
+  height: 80px;
+  background-size: 80px 80px;
   transform: rotate(90deg);
 }
 

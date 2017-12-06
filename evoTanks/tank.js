@@ -56,6 +56,11 @@ export default class Tank {
 
   }
 
+  center(){
+    return [this.xPos + this.size/2,
+      this.yPos + this.size/2];
+  }
+
   handleShoot(){
     if(this.fireInterval === 0 && this.actions.shoot && this.ammo > 0){
       this.ammo --;
@@ -99,7 +104,7 @@ export default class Tank {
   }
 
   updatePos(newX, newY){
-    let collision = this.detectCollision(newX, newY, this.size);
+    let collision = this.detectCollision(...this.center(), this.size);
     if (collision){
       return false;
     }
