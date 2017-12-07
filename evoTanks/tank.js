@@ -7,16 +7,16 @@ import $ from 'jquery';
 
 
 export default class Tank {
-  constructor({id, speed, xPos, yPos, dir, detectCollision, generateBullet, map}){
+  constructor({id, speed, xPos, yPos, dir, detectCollision, generateBullet, map, type}){
     this.xPos = xPos;
     this.yPos = yPos;
     this.dir = dir;
     this.speed = 4;
     this.id = id;
     this.actions = {};
-    this.size = 80;
+    this.size = 50;
     this.rotationAmount = 6;
-    this.ammo = 1000;
+    this.ammo = 5;
     this.ref = $(`#tank${this.id}`);
     this.detectCollision = detectCollision;
     this.generateBullet = generateBullet;
@@ -25,9 +25,10 @@ export default class Tank {
 
 
   //ensure initialize bebfore AI setup
-    if (this.id === 0){
+    if (type === "AI"){
       setTimeout(()=>{
-        const controller = new AIController(this, this.actions, this.map);
+      const controller = new AIController(this, this.actions, this.map);
+        window.controller = controller;
       }, 1000);
     }else{
       const controller = new KeyboardController2(this.actions);
@@ -65,8 +66,8 @@ export default class Tank {
     if(this.fireInterval === 0 && this.actions.shoot && this.ammo > 0){
       this.ammo --;
       this.fireInterval = 10;
-      let turretX = this.xPos + this.size/2  + Math.sin(this.rad()) * this.size;
-      let turretY = this.yPos + this.size/2 - Math.cos(this.rad()) * this.size;
+      let turretX = this.xPos + this.size/2  + Math.sin(this.rad()) * this.size/1.5;
+      let turretY = this.yPos + this.size/2 - Math.cos(this.rad()) * this.size/1.5;
       $(".dot").css({top: turretY+"px", left: turretX + "px"});
 
       this.generateBullet(turretX, turretY, this.dir, this.id);
@@ -104,7 +105,7 @@ export default class Tank {
   }
 
   updatePos(newX, newY){
-    let collision = this.detectCollision(...this.center(), this.size);
+    let collision = this.detectCollision(newX, newY, this.size);
     if (collision){
       return false;
     }

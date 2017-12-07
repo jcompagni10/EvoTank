@@ -1,6 +1,7 @@
-import {distance} from './util.js';
+import {distance, randPoint, rand} from './util.js';
 import merge from 'lodash/merge';
 import PathFinder from './pathFinder/path_finder';
+import TestBullet from './test_bullet';
 
 export default class AIController{
   constructor(tank, actions, map){
@@ -12,7 +13,8 @@ export default class AIController{
     this.grid = {horiz: map.horizWalls, vert: map.vertWalls};
     this.waypoints = [];
     this.map = map;
-    this.opTank = this.map.tanks[1];
+    this.opTank = this.map.tanks[(tank.id+1)%2];
+    this.fireInterval = 100;
   }
 
 
@@ -37,15 +39,26 @@ export default class AIController{
     }
     else{
       const pf = new PathFinder(this.grid);
+      if (distance(...this.tank.center(), ...this.opTank.center()) > 100){
       this.waypoints = pf.getWaypoints(this.tankCell(this.tank),
         this.tankCell(this.opTank));
+        console.log("to enemy");
+      } else{
+        let rp  = [rand(0,this.map.size), rand(this.map.size)];
+        this.waypoints = pf.getWaypoints(this.tankCell(this.tank), rp);
+        console.log("to rand");
+      }
     }
+    return "nextWP";
   }
 
   handler(){
+    if (this.fireInterval < 100 ) this.fireInterval ++;
+    merge(this.actions, {shoot: false });
+    // console.log(this.state);
     switch(this.state){
     case "IDLE":
-      this.nextWaypoint();
+      let result = this.checkForTarget() || this.nextWaypoint();
       break;
     case "ROTATING":
       this.executeRotation();
@@ -56,6 +69,9 @@ export default class AIController{
     case "MOVING":
       this.executeForward();
       break;
+    case "ROTATING_TO_FIRE":
+      this.handleFire(this.enemyDir);
+      break;
     default:
       debugger;
 
@@ -63,33 +79,36 @@ export default class AIController{
   }
 
   calcRotationAmt(pX, pY){
-    let centerX = this.tank.xPos + this.tank.size/2;
-    let centerY = this.tank.yPos + this.tank.size/2;
+    let [centerX, centerY] = this.tank.center();
     let xDist =  pX - centerX;
     let yDist =  pY - centerY;
     return Math.atan2(xDist,-yDist) * 180/Math.PI % 360;
   }
 
+  shortestDir(ptA, ptB){
+    let diff = Math.abs(ptA - ptB);
+    diff = (diff > 180) ? 360 - diff : diff;
+    if ((ptA + diff)%360 === ptB){
+      return "right";
+    }
+    return "left";
+  }
   rotate(){
     let targetDir = this.calcRotationAmt(this.targetX, this.targetY);
     if (targetDir < 0) {
       targetDir = 360 + targetDir;
     }
 
-    // TODO: rotate shortest direction
-    let action = "left";
-    if (targetDir > this.tank.dir && targetDir < (this.tank.dir+180)%360){
-      action = "right";
-    }
-    merge(this.actions, {[action]: true });
+
+    this.rotDir = this.shortestDir(this.tank.dir, targetDir);
+    merge(this.actions, {[this.rotDir]: true });
     this.state = "ROTATING";
     this.targetDir = targetDir;
-    this.action = action;
   }
 
   executeRotation(){
     if (Math.abs(this.tank.dir-this.targetDir) <= 6){
-      merge(this.actions, {[this.action]: false });
+      merge(this.actions, {[this.rotDir]: false });
       this.state = "ROTATION_COMPLETE";
       return true;
     }
@@ -113,5 +132,42 @@ export default class AIController{
     }
   }
 
+  handleFire(enemyDir){
+    if (Math.abs(enemyDir - this.tank.dir) <= 6){
+      merge(this.actions, {shoot: true });
+      this.fireInterval = 0;
+      this.state = "IDLE";
+      merge(this.actions, {[this.rotDir]: false });
+    } else if (this.state === "PREP_TO_FIRE"){
+      this.enemyDir = enemyDir;
+      this.rotDir = this.shortestDir(this.tank.dir, enemyDir);
+      merge(this.actions, {[this.rotDir]: true });
+      this.state = "ROTATING_TO_FIRE";
+    }
+  }
+
+  checkForTarget(){
+    if (this.fireInterval === 100){
+      let enemyDir = this.calcRotationAmt(...this.opTank.center());
+      if (enemyDir < 0) enemyDir = 360 + enemyDir;
+      let bullet = new TestBullet({
+        xPos: this.tank.xPos,
+        yPos: this.tank.yPos,
+        dir: enemyDir,
+        detectCollision: this.map.detectCollision.bind(this.map),
+        tankId: this.tank.id
+      });
+      let length = 50;
+      let result = bullet.test(length);
+      bullet.destroy();
+      if (result !== -1 ){
+        this.state = "PREP_TO_FIRE";
+        this.handleFire(enemyDir);
+        return true;
+      }
+    } else{
+      this.fireInterval ++;
+    }
+  }
 
 }

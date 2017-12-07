@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default class Bullet{
   constructor({xPos, yPos, dir, detectCollision, id, tankId}){
     this.size = 7;
@@ -38,7 +36,7 @@ export default class Bullet{
       this.xPos,
       this.yPos,
       this.size,
-      true
+      "BULLET"
     );
 
     if (collision === "VERT_COLLISION"){
@@ -52,13 +50,11 @@ export default class Bullet{
   }
 
   bounceX(){
-    this.dir =360 - this.dir;
-    this.move();
+    this.dir = 360 - this.dir;
   }
 
   bounceY(){
     this.dir =180 - this.dir;
-    this.move();
   }
 
   render(){

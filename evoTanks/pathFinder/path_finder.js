@@ -46,7 +46,6 @@ export default class PathFinder{
       waypoints.unshift(parent.position);
       parent = parent.parent;
     }
-    waypoints.push(target);
     return waypoints;
   }
 

@@ -13,7 +13,7 @@
 #map{
   width: 700px;
   height: 700px;
-  border: 8px solid #000;
+  border: 6px solid #000;
   position: relative;
   overflow: hidden;
   margin: 0 auto;
@@ -21,17 +21,17 @@
 
 .cell{
   float: left;
-  width: 140px;
+  width: 100px;
   box-sizing: border-box;
-  height: 140px;
+  height: 100px;
 }
 
 .cell.horiz{
-  border-bottom: 2px solid #000;
+  border-bottom: 6px solid #000;
 }
 
 .cell.vert{
-  border-right: 2px solid #000;
+  border-right: 6px solid #000;
 }
 
 .bullet{

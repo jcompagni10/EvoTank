@@ -2,5 +2,5 @@ import Map from "./map";
 import $ from 'jquery';
 
 $(()=>{
-  window.map = new Map(5);
+  window.map = new Map(7);
 });
