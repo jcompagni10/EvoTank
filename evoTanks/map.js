@@ -175,7 +175,7 @@ export default class Map{
     for(let i = 0; i < 2; i++){
       let tank = this.tanks[i];
       let tankPos = tank.center();
-      let dist = distance(x,y, tankPos[0], tankPos[1]);
+      let dist = distance(x+size/2,y+size/2, tankPos[0], tankPos[1]);
       if (dist < (size + tank.size)/2){
           if (type === "BULLET"){
             this.updateScores((tank.id + 1 )%2);
