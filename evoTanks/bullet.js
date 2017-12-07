@@ -1,7 +1,7 @@
 export default class Bullet{
   constructor({xPos, yPos, dir, detectCollision, id, tankId}){
     this.size = 7;
-    this.speed = 6;
+    this.speed = .4;
     this.tankId = tankId;
     this.xPos = xPos;
     this.yPos= yPos;
@@ -13,7 +13,9 @@ export default class Bullet{
     this.render();
   }
 
-
+  center(){
+    return [this.xPos + this.size/2, this.yPos + this.size/2];
+  }
 
   css(){
     return {
@@ -38,7 +40,6 @@ export default class Bullet{
       this.size,
       "BULLET"
     );
-
     if (collision === "VERT_COLLISION"){
       this.bounceX();
     }

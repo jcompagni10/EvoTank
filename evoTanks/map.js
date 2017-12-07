@@ -1,4 +1,4 @@
-import {rand, distance, randPoint, clamp} from "./util";
+import {rand, distance, randPoint, clamp, wallRect, resolution} from "./util";
 import $ from 'jquery';
 import Tank from './tank';
 import Bullet from './bullet';
@@ -14,11 +14,16 @@ export default class Map{
     this.resetMap();
     this.scores = [0,0];
     this.timer = setInterval(this.handleFrame.bind(this), 20);
+    window.addDot = this.addDot;
   }
 
   resetMap(){
     this.horizWalls = [...Array(this.size).keys()].map(i => Array(this.size));
     this.vertWalls = [...Array(this.size).keys()].map(i => Array(this.size));
+    this.horizWalls[-1] = false;
+    this.vertWalls[-1] = false;
+    this.horizWalls[this.size] = false;
+    this.vertWalls[this.size] = false;
     this.grid = {horiz: this.horizWalls, vert: this.vertWalls};
     this.bullets.clear();
     this.tanks = [];
@@ -28,10 +33,15 @@ export default class Map{
       this.vertWalls[this.size-1][i] = true;
       this.horizWalls[i][this.size-1] = true;
     }
-    this.createTank("AI");
-    this.createTank("AI");
+    this.createTank("player");
+    // this.createTank("AI");
   }
 
+  addDot(x,y){
+    let dot = $("<div class='dot'></dot");
+    dot.css({left: x + "px", top: y+"px"});
+    $("#map").append(dot);
+  }
   createTank(type){
     let id = this.tanks.length;
     this.map.append(
@@ -120,30 +130,73 @@ export default class Map{
     this.scores[id]++;
     $("#score"+id).html(this.scores[id]);
   }
-  detectCollision(x,y,size, type){
+
+  detectCollision(x, y, size, type){
+    //center x and y
     if(x < 0) return "VERT_COLLISION";
     if(y < 0) return "HORIZ_COLLISION";
+    x = x + size/2;
+    y = y + size/2;
 
-    let xGridPos = [
-      Math.floor(x/this.resolution),
-      Math.floor((x+size)/this.resolution)
-    ];
-    let yGridPos = [
-     Math.floor(y/this.resolution),
-     Math.floor((y+size)/this.resolution)
-    ];
+
+    let gridX = Math.floor(x/this.resolution);
+
+    let gridY = Math.floor(y/this.resolution);
+
+    let topLeft = [
+      [gridX-1, gridY-1],
+      [gridX-1, gridY-1],
+      [gridX, gridY-1],
+      [gridX-1, gridY]
+    ]
+
+    let topRight = [
+      [gridX+1, gridY-1],
+      [gridX, gridY-1],
+      [gridX, gridY-1],
+      [gridX, gridY]
+    ]
+
+    let bottomRight = [
+      [gridX+1, gridY],
+      [gridX, gridY+1],
+      [gridX, gridY],
+      [gridX, gridY]
+    ]
+
+    let bottomLeft = [
+      [gridX-1, gridY],
+      [gridX-1, gridY+1],
+      [gridX, gridY],
+      [gridX-1, gridY]
+    ]
+
+    let quadStr = (resolution/2 > y%resolution) ? 'top' : 'bottom';
+    quadStr += (resolution/2 > x%resolution) ? 'Left' : 'Right';
+    let quad = eval(quadStr)
+
     let collision;
-    for(let i = 0; i < 2 && !collision; i++ ){
-      for(let j = 0; j < 2 && !collision; j++ ){
-        collision = this.checkWallCollision(
-          xGridPos[i],
-          yGridPos[j],
-          x,
-          y,
-          size
-        );
+
+    for (let i = 0; i < 4 && !collision; i++){
+      let [gridX, gridY] = quad[i];
+      let walls, wallType;
+      if (i % 2 == 0) {
+        walls = this.horizWalls;
+        wallType = "HORIZ";
+      } else{
+        walls = this.vertWalls;
+        wallType = "VERT";
+      }
+      let collisionType = (i === 1 || i == 2) ? "HORIZ_COLLISION" : "VERT_COLLISION";
+
+      if (walls[gridX][gridY]){
+        let rect = wallRect(wallType, gridX, gridY);
+        collision = this.checkRectCollision(x,y, size, rect) ? collisionType : null;
+        debugger
       }
     }
+
+
     if ((type === "BULLET" ||
       type === "TEST_BULLET") && !collision){
         collision = this.checkTankCollision(x,y,size,type);
@@ -151,31 +204,22 @@ export default class Map{
     return collision;
   }
 
-  checkWallCollision(gridX, gridY, x, y, size){
-    try{
-      if (this.vertWalls[gridX][gridY]){
-        let wall = this.resolution * (gridX+1);
-        if ((x+size) > (wall-6) && x < wall){
-          return "VERT_COLLISION";
-        }
-      }
-      if (this.horizWalls[gridX][gridY]){
-        let wall = this.resolution * (gridY + 1);
-        if ((y+size) > (wall-6) && y < wall){
-            return "HORIZ_COLLISION";
-          }
-      }
-    }
-    catch(e){
-      // maybe delete bullet
-    }
+  checkRectCollision(x,y,size, rect){
+    let [left, right, top, bottom] = rect;
+    let closestX = clamp(x, left, right);
+    let closestY = clamp(y, top, bottom);
+    let distX = x - closestX;
+    let distY = y - closestY;
+    let distSq = distX ** 2 + distY ** 2;
+    return (distSq < (size/2) ** 2);
   }
 
+
   checkTankCollision(x,y,size, type){
-    for(let i = 0; i < 2; i++){
+    for(let i = 0; i < this.tanks.length; i++){
       let tank = this.tanks[i];
       let tankPos = tank.center();
-      let dist = distance(x+size/2,y+size/2, tankPos[0], tankPos[1]);
+      let dist = distance(x, y, tankPos[0], tankPos[1]);
       if (dist < (size + tank.size)/2){
           if (type === "BULLET"){
             this.updateScores((tank.id + 1 )%2);

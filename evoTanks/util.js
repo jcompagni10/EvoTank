@@ -19,3 +19,21 @@ export function randPoint(size, resolution){
 export function clamp(val, min, max){
   return Math.min(Math.max(val,min),max)
 }
+
+export function wallRect(type, gridX, gridY){
+  if (type === "VERT"){
+    let left = gridX * resolution + resolution - 6;
+    let right = (gridX+1) * resolution;
+    let topp = gridY * resolution
+    let bottom = (gridY+1) * resolution;
+    return [left,right,topp,bottom];
+  } else{
+    let left = gridX * resolution;
+    let right =( gridX+1) * resolution;
+    let topp = gridY * resolution + resolution - 6;
+    let bottom = (gridY + 1) * resolution;
+    return [left,right,topp,bottom];
+  }
+}
+
+export const resolution = 100;
