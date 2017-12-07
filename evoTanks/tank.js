@@ -66,8 +66,8 @@ export default class Tank {
     if(this.fireInterval === 0 && this.actions.shoot && this.ammo > 0){
       this.ammo --;
       this.fireInterval = 10;
-      let turretX = this.xPos + this.size/2  + Math.sin(this.rad()) * this.size/1.4;
-      let turretY = this.yPos + this.size/2 - Math.cos(this.rad()) * this.size/1.4;
+      let turretX = this.center()[0] + Math.sin(this.rad()) * this.size/1.6;
+      let turretY = this.center()[1] - Math.cos(this.rad()) * this.size/1.6;
       $(".dot").css({top: turretY+"px", left: turretX + "px"});
 
       this.generateBullet(turretX, turretY, this.dir, this.id);

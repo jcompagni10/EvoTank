@@ -5,12 +5,13 @@ export default class TestBullet extends Bullet{
     super(params);
     this.hit = false;
     this.speed = 10;
+    this.size = 20;
   }
 
   render(){
-    // let dot = $("<div class='dot'></dot");
-    // dot.css({top: this.yPos+"px", left: this.xPos + "px"});
-    // $("#map").append(dot);
+    let dot = $("<div class='dot'></dot");
+    dot.css({top: this.yPos+"px", left: this.xPos + "px"});
+    $("#map").append(dot);
   }
 
   test(length){

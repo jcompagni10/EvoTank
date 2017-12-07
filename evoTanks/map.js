@@ -34,7 +34,7 @@ export default class Map{
       this.horizWalls[i][this.size-1] = true;
     }
     this.createTank("player");
-    // this.createTank("AI");
+    this.createTank("AI");
   }
 
   addDot(x,y){
@@ -192,7 +192,6 @@ export default class Map{
       if (walls[gridX][gridY]){
         let rect = wallRect(wallType, gridX, gridY);
         collision = this.checkRectCollision(x,y, size, rect) ? collisionType : null;
-        debugger
       }
     }
 
@@ -222,8 +221,8 @@ export default class Map{
       let dist = distance(x, y, tankPos[0], tankPos[1]);
       if (dist < (size + tank.size)/2){
           if (type === "BULLET"){
+            debugger
             this.updateScores((tank.id + 1 )%2);
-            console.log("COLLISION", tank.id);
             this.resetMap();
           }
           return "TANK_COLLISION" + tank.id;

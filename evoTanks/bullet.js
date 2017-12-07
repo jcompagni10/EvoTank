@@ -1,10 +1,10 @@
 export default class Bullet{
   constructor({xPos, yPos, dir, detectCollision, id, tankId}){
     this.size = 7;
-    this.speed = .4;
+    this.speed = 5;
     this.tankId = tankId;
-    this.xPos = xPos;
-    this.yPos= yPos;
+    this.xPos = xPos - this.size/2;
+    this.yPos= yPos - this.size/2;
     this.dir = dir;
     this.life = 500;
     this.detectCollision = detectCollision;

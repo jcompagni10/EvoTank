@@ -8,13 +8,14 @@ export default class AIController{
     this.tank = tank;
     this.actions = actions;
     this.state = "IDLE";
-    this.handlerInterval = setInterval(this.handler.bind(this), 20);
+    this.handlerInterval = setInterval(this.handler.bind(this), 25);
     this.resolution = map.resolution;
     this.grid = {horiz: map.horizWalls, vert: map.vertWalls};
     this.waypoints = [];
     this.map = map;
     this.opTank = this.map.tanks[(tank.id+1)%2];
     this.fireInterval = 100;
+    this.lastShot = this.fireInterval;
   }
 
 
@@ -42,20 +43,16 @@ export default class AIController{
       if (distance(...this.tank.center(), ...this.opTank.center()) > 100){
       this.waypoints = pf.getWaypoints(this.tankCell(this.tank),
         this.tankCell(this.opTank));
-        console.log("to enemy");
       } else{
         let rp  = [rand(0,this.map.size), rand(this.map.size)];
         this.waypoints = pf.getWaypoints(this.tankCell(this.tank), rp);
-        console.log("to rand");
       }
     }
     return "nextWP";
   }
 
   handler(){
-    if (this.fireInterval < 100 ) this.fireInterval ++;
     merge(this.actions, {shoot: false });
-    // console.log(this.state);
     switch(this.state){
     case "IDLE":
       let result = this.checkForTarget() || this.nextWaypoint();
@@ -107,7 +104,7 @@ export default class AIController{
   }
 
   executeRotation(){
-    if (Math.abs(this.tank.dir-this.targetDir) <= 6){
+    if (Math.abs(this.tank.dir-this.targetDir) <= 7){
       merge(this.actions, {[this.rotDir]: false });
       this.state = "ROTATION_COMPLETE";
       return true;
@@ -133,9 +130,9 @@ export default class AIController{
   }
 
   handleFire(enemyDir){
-    if (Math.abs(enemyDir - this.tank.dir) <= 6){
+    if (Math.abs(enemyDir - this.tank.dir) <= 7){
       merge(this.actions, {shoot: true });
-      this.fireInterval = 0;
+      this.lastShot = 0;
       this.state = "IDLE";
       merge(this.actions, {[this.rotDir]: false });
     } else if (this.state === "PREP_TO_FIRE"){
@@ -147,7 +144,8 @@ export default class AIController{
   }
 
   checkForTarget(){
-    if (this.fireInterval === 100){
+    debugger
+    if (this.lastShot === this.fireInterval){
       let enemyDir = this.calcRotationAmt(...this.opTank.center());
       if (enemyDir < 0) enemyDir = 360 + enemyDir;
       let bullet = new TestBullet({
@@ -166,7 +164,7 @@ export default class AIController{
         return true;
       }
     } else{
-      this.fireInterval ++;
+      this.lastShot ++;
     }
   }
 
