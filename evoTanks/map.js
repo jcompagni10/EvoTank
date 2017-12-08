@@ -71,7 +71,7 @@ export default class Map{
     });
     let controller;
     if (type === "AI"){
-      controller = this.AIBuilder.randAI(tank);
+      controller = this.AIBuilder.newAI(tank);
       window.controller = controller;
       tank.controller = controller;
     }else{
