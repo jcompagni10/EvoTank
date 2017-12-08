@@ -15144,7 +15144,7 @@ class AIBuilder {
     this.map = map;
     this.count = 0;
     this.state = "random seeding";
-    this.genSize = 2;
+    this.genSize = 10;
   }
 
   randTraits() {
