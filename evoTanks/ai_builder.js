@@ -9,6 +9,7 @@ export default class AIBuilder {
     this.map = map;
     this.count = 0;
     this.state= "random seeding";
+    this.genSize= 2;
   }
 
   randTraits(){
@@ -16,7 +17,6 @@ export default class AIBuilder {
     traits["fireInterval"] = rand(5, 20);
     traits["bulletAwareness"] = rand(10, 200);
     traits["targetAwareness"] = rand(10, 200);
-    this.aiStore.push([traits]);
     return traits;
   }
   alertResult(result){
@@ -27,7 +27,9 @@ export default class AIBuilder {
     this.count ++;
   }
   randAI(tank){
-    return new AIController(tank, this.map, this.randTraits());
+    let traits = this.randTraits();
+    this.aiStore.push([traits]);
+    return new AIController(tank, this.map, traits);
   }
 
   nextGeneration(){
@@ -41,16 +43,19 @@ export default class AIBuilder {
 
   newAI(tank){
     if (this.state === "random seeding"){
-      if (this.winners[0].length < 7);
+      if (this.winners[0].length <= this.genSize){
         return this.randAI(tank);
-    } else{
+      } else{
+        this.nextGeneration();
+      }
+    }
+    if (this.winners[this.curGeneration].length > this.genSize){
       this.nextGeneration();
     }
-    if (this.winners[this.curGeneration >= 7]){
-      this.nextGeneration();
-    }
-    let trait1 = rand(this.winners[this.curGeneration][rand(7)]);
-    let trait2 = rand(this.winners[this.curGeneration][rand(7)]);
+    let rand1 = rand(this.genSize-1);
+    let rand2 = rand(this.genSize-1);
+    let trait1 = this.winners[this.curGeneration-1][rand1][0];
+    let trait2 = this.winners[this.curGeneration-1][rand2][0];
     return this.breed(trait1, trait2, tank);
   }
 
@@ -67,6 +72,7 @@ export default class AIBuilder {
       bulletAwareness: rand(...traitRange[1]),
       targetAwareness: rand(...traitRange[2]),
     };
-    return new AIController(tank, this.map, this.newTraits);
+    this.aiStore.push([newTraits]);
+    return new AIController(tank, this.map, newTraits);
   }
 }
