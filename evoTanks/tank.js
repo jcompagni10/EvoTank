@@ -1,6 +1,3 @@
-import KeyboardController1 from './keyboard_controller1';
-import KeyboardController2 from './keyboard_controller2';
-import AIController from './ai_controller';
 import PathFinder from './pathFinder/path_finder';
 
 import $ from 'jquery';
@@ -14,7 +11,7 @@ export default class Tank {
     this.speed = 4;
     this.id = id;
     this.actions = {};
-    this.size = 50;
+    this.size = 35;
     this.rotationAmount = 6;
     this.ammo = 5;
     this.ref = $(`#tank${this.id}`);
@@ -22,19 +19,7 @@ export default class Tank {
     this.generateBullet = generateBullet;
     this.fireInterval = 0;
     this.map = map;
-
-
-  //ensure initialize bebfore AI setup
-    if (type === "AI"){
-      setTimeout(()=>{
-      const controller = new AIController(this, this.actions, this.map);
-        window.controller = controller;
-      }, 1000);
-    }else{
-      const controller = new KeyboardController2(this.actions);
-    }
-    const pf = new PathFinder(this.grid);
-    window.pf = pf;
+    this.type = type;
   }
 
   rad(){
@@ -105,7 +90,7 @@ export default class Tank {
   }
 
   updatePos(newX, newY){
-    let collision = this.detectCollision(newX, newY, this.size);
+    let collision = this.detectCollision(newX, newY, this.size, this.type);
     if (collision){
       return false;
     }
@@ -117,5 +102,8 @@ export default class Tank {
 
   render(){
     this.ref.css(this.css());
+    if (this.type === "AI"){
+      this.controller.handler();
+    }
   }
 }

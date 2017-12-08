@@ -1,19 +1,19 @@
 .tank{
   position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   transform: rotate(90deg);
 }
 
 
 .tank::after{
   content: ' ';
-  width: 56px;
-  height: 56px;
-  margin-left: -3px;
-  margin-top: -3px;
+  width: 39px;
+  height: 39px;
+  margin-left: -2px;
+  margin-top: -2px;
   display: block;
-  background-size: 56px 56px;
+  background-size: 39px 39px;
   background-position: center;
 }
 .tank.red:after{

@@ -4,14 +4,14 @@ export default class TestBullet extends Bullet{
   constructor(params){
     super(params);
     this.hit = false;
-    this.speed = 10;
+    this.speed = 7;
     this.size = 20;
   }
 
   render(){
-    let dot = $("<div class='dot'></dot");
-    dot.css({top: this.yPos+"px", left: this.xPos + "px"});
-    $("#map").append(dot);
+    // let dot = $("<div class='dot'></dot");
+    // dot.css({top: this.yPos+"px", left: this.xPos + "px"});
+    // $("#map").append(dot);
   }
 
   test(length){
@@ -31,10 +31,10 @@ export default class TestBullet extends Bullet{
       this.size,
       "TEST_BULLET"
     );
-    if (collision === "VERT_COLLISION"){
+    if (collision[0] === "VERT_COLLISION"){
       this.bounceX();
     }
-    if (collision === "HORIZ_COLLISION"){
+    if (collision[0] === "HORIZ_COLLISION"){
       this.bounceY();
     }
     if (collision === "TANK_COLLISION" + (this.tankId+1)%2){

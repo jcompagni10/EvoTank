@@ -1,18 +1,33 @@
+@import url('https://fonts.googleapis.com/css?family=Paytone+One');
+
+body{
+  font-family: 'Paytone One', sans-serif;
+}
+
 .container{
   width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .logo{
   margin: 0 auto;
   width: 200px;
   display: block;
-  margin-bottom: 40px;
-  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-top: 15px;
+}
+
+.sub-title{
+  margin: 0 auto;
+  width: 300px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 #map{
-  width: 700px;
-  height: 700px;
+  width: 560px;
+  height: 560px;
   border: 6px solid #000;
   position: relative;
   overflow: hidden;
@@ -21,9 +36,9 @@
 
 .cell{
   float: left;
-  width: 100px;
+  width: 80px;
   box-sizing: border-box;
-  height: 100px;
+  height: 80px;
 }
 
 .cell.horiz{
@@ -43,16 +58,20 @@
 }
 
 .score{
-  font-size:40px;
+  font-size:35px;
   display: inline-block;
 }
 
 .scoreBoard{
   margin: 0 auto;
-  border: 4px solid #000;
+  border: 2px solid #000;
   display: flex;
   justify-content: space-around;
   width: 400px;
+  border-radius: 20px;
+  margin-top: 20px;
+  font-size:30px;
+  line-height: 47px;
 }
 .red{
   color: red
@@ -67,4 +86,31 @@
   height: 2px;
   width: 2px;
   position: absolute;
+}
+
+.controls{
+  float: left;
+  margin-right: -200px;
+  margin-left: -100px;
+  margin-top: 20px;
+  margin-bottom: -50px
+}
+@media screen and (max-width: 950px) {
+  .controls{
+    display: none;
+  }
+}
+.description{
+  margin: 50px 20%;
+}
+h2{
+  text-align: center;
+}
+
+h3{
+  text-align: center;
+}
+
+p{
+  font-family: arial;
 }

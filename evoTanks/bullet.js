@@ -34,28 +34,62 @@ export default class Bullet{
 
   nextFrame(){
     this.life --;
+    let rad = this.dir * Math.PI / 180;
+    let newX = this.xPos + Math.sin(rad)*this.speed;
+    let newY = this.yPos - Math.cos(rad)*this.speed;
+
     let collision = this.detectCollision(
-      this.xPos,
-      this.yPos,
+      newX,
+      newY,
       this.size,
       "BULLET"
     );
-    if (collision === "VERT_COLLISION"){
+    if (collision[0] === "VERT_COLLISION"){
+      if (this.dir > 180){
+        this.xPos += (collision[1]+1);
+      } else{
+        this.xPos -=( collision[1]+1);
+      }
       this.bounceX();
+      this.nextFrame();
     }
-    if (collision === "HORIZ_COLLISION"){
+    else if (collision[0] === "HORIZ_COLLISION"){
+      if (this.dir > 270 && this.dir < 90){
+        this.xPos -= collision[1];
+      } else{
+        this.xPos += collision[1];
+      }
       this.bounceY();
+      this.nextFrame();
+
     }
-    this.move();
+    else if (collision === "DUB_COLlISION"){
+      // this.xPos += 8;
+      // this.yPos += 8;
+      this.bounceY();
+      this.bounceX();
+      this.nextFrame();
+
+    } else{
+      this.xPos = newX;
+      this.yPos = newY;
+    }
+    // this.move();
     this.render();
   }
 
   bounceX(){
     this.dir = 360 - this.dir;
+    if (this.dir < 0){
+      this.dir = 360 + this.dir;
+    }
   }
 
   bounceY(){
     this.dir =180 - this.dir;
+    if (this.dir < 0){
+      this.dir = 360 + this.dir;
+    }
   }
 
   render(){

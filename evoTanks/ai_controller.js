@@ -2,32 +2,56 @@ import {distance, randPoint, rand} from './util.js';
 import merge from 'lodash/merge';
 import PathFinder from './pathFinder/path_finder';
 import TestBullet from './test_bullet';
+import {resolution} from './util';
 
 export default class AIController{
-  constructor(tank, actions, map){
+  constructor(tank, map,
+    {fireInterval, bulletAwareness, targetAwareness }){
+    //adjustable traits
+    this.fireInterval = fireInterval; //5 - 20
+    this.bulletAwareness = bulletAwareness; //10-200
+    this.targetAwareness = targetAwareness; //10-200
+    this.wpInterval = 5000;
+
     this.tank = tank;
-    this.actions = actions;
+    this.actions = tank.actions;
     this.state = "IDLE";
-    this.handlerInterval = setInterval(this.handler.bind(this), 25);
-    this.resolution = map.resolution;
     this.grid = {horiz: map.horizWalls, vert: map.vertWalls};
     this.waypoints = [];
     this.map = map;
-    this.opTank = this.map.tanks[(tank.id+1)%2];
-    this.fireInterval = 100;
+
     this.lastShot = this.fireInterval;
+    this.lastWP = 0;
   }
 
 
   tankCell(tank){
-    return [Math.floor(tank.xPos/this.resolution),
-      Math.floor(tank.yPos/this.resolution)];
+    return [Math.floor(tank.xPos/resolution),
+      Math.floor(tank.yPos/resolution)];
   }
 
   cellToCoords(cell){
     return cell.map((pt)=>(
-      pt * this.resolution + this.resolution/2
+      pt * resolution + resolution/2
     ));
+  }
+  opTank(){
+    let ownId = this.tank.id;
+    return this.map.tanks[(ownId+1)%2];
+  }
+
+  setNewWayPoints(includeFirst){
+    const pf = new PathFinder(this.grid);
+    if (distance(...this.tank.center(), ...this.opTank().center()) > 100){
+    this.waypoints = pf.getWaypoints(this.tankCell(this.tank),
+      this.tankCell(this.opTank()));
+    } else{
+      let randCell  = [rand(0,this.map.size), rand(this.map.size)];
+      this.waypoints = pf.getWaypoints(this.tankCell(this.tank), randCell);
+    }
+    if (!includeFirst){
+      this.waypoints.shift();
+    }
   }
 
   nextWaypoint(){
@@ -39,39 +63,73 @@ export default class AIController{
       this.rotate();
     }
     else{
-      const pf = new PathFinder(this.grid);
-      if (distance(...this.tank.center(), ...this.opTank.center()) > 100){
-      this.waypoints = pf.getWaypoints(this.tankCell(this.tank),
-        this.tankCell(this.opTank));
-      } else{
-        let rp  = [rand(0,this.map.size), rand(this.map.size)];
-        this.waypoints = pf.getWaypoints(this.tankCell(this.tank), rp);
-      }
+      this.setNewWayPoints();
     }
     return "nextWP";
   }
 
+  handleWayPoints(){
+    if (this.lastWP === 0 ){
+      this.setNewWayPoints();
+      this.lastWP = this.wpInterval;
+    } else{
+      this.lastWP --;
+    }
+  }
   handler(){
     merge(this.actions, {shoot: false });
+    // console.log(this.state);
+    this.handleWayPoints();
     switch(this.state){
     case "IDLE":
-      let result = this.checkForTarget() || this.nextWaypoint();
+    this.checkForBullets() ||
+      this.checkForTarget() || this.nextWaypoint();
+      break;
+    case "AVOIDING":
+      this.checkForBullets();
       break;
     case "ROTATING":
-      this.executeRotation();
+      this.checkForBullets() ||this.executeRotation();
       break;
     case "ROTATION_COMPLETE":
-      this.forward();
+      this.checkForBullets() ||  this.forward();
       break;
     case "MOVING":
-      this.executeForward();
+      this.checkForBullets() || this.executeForward();
       break;
     case "ROTATING_TO_FIRE":
-      this.handleFire(this.enemyDir);
+      this.checkForBullets() || this.handleFire(this.enemyDir);
       break;
     default:
       debugger;
 
+    }
+  }
+
+  checkForBullets(){
+    // if( !this.dodge) return false;
+    let dangerousBullets = [];
+    this.map.bullets.forEach(bullet => {
+      let bulletPos = bullet.center();
+      if (Math.abs(bulletPos[0] - this.tank.center()[0]) < this.bulletAwareness
+        && Math.abs(bulletPos[1] - this.tank.center()[1]) < this.bulletAwareness){
+          dangerousBullets.push(bullet);
+        }
+    });
+    if (dangerousBullets.length > 0 ){
+      merge(this.actions, {down: true });
+      merge(this.actions, {up: false });
+      merge(this.actions, {[this.rotDir]: false });
+      this.state = "AVOIDING";
+      return true;
+    } else{
+      if (this.state === "AVOIDING"){
+        merge(this.actions, {down: false });
+        this.setNewWayPoints(true);
+        this.state = "IDLE";
+        return true;
+      }
+      return false;
     }
   }
 
@@ -144,9 +202,8 @@ export default class AIController{
   }
 
   checkForTarget(){
-    debugger
     if (this.lastShot === this.fireInterval){
-      let enemyDir = this.calcRotationAmt(...this.opTank.center());
+      let enemyDir = this.calcRotationAmt(...this.opTank().center());
       if (enemyDir < 0) enemyDir = 360 + enemyDir;
       let bullet = new TestBullet({
         xPos: this.tank.xPos,
@@ -155,8 +212,7 @@ export default class AIController{
         detectCollision: this.map.detectCollision.bind(this.map),
         tankId: this.tank.id
       });
-      let length = 50;
-      let result = bullet.test(length);
+      let result = bullet.test(this.targetAwareness);
       bullet.destroy();
       if (result !== -1 ){
         this.state = "PREP_TO_FIRE";

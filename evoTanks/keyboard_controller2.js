@@ -9,18 +9,23 @@ class KeyboardController2 {
     let key = e.which;
     switch(key){
       case 38:
+      e.preventDefault();
         $.extend(this.keys, {up: true});
         break;
       case 39:
+      e.preventDefault();
       $.extend(this.keys, {right: true});
         break;
       case 37:
+      e.preventDefault();
       $.extend(this.keys, {left: true});
         break;
       case 40:
+      e.preventDefault();
       $.extend(this.keys, {down: true});
         break;
       case 32:
+      e.preventDefault();
       $.extend(this.keys, {shoot: true});
         break;
     }

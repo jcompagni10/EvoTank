@@ -2,19 +2,25 @@ import {rand, distance, randPoint, clamp, wallRect, resolution} from "./util";
 import $ from 'jquery';
 import Tank from './tank';
 import Bullet from './bullet';
+import KeyboardController1 from './keyboard_controller1';
+import KeyboardController2 from './keyboard_controller2';
+import AIBuilder from './ai_builder';
+
 const TANKCOLORS = ["red", "blue"];
+
 
 export default class Map{
   constructor(size){
     this.size = size;
-    this.resolution = 700/size;
+    this.resolution = 560/size;
     this.map = $("#map");
     this.tanks = [];
     this.bullets = new Set;
+    this.AIBuilder = new AIBuilder(this);
     this.resetMap();
     this.scores = [0,0];
-    this.timer = setInterval(this.handleFrame.bind(this), 20);
     window.addDot = this.addDot;
+    this.bulletId = 0;
   }
 
   resetMap(){
@@ -33,8 +39,11 @@ export default class Map{
       this.vertWalls[this.size-1][i] = true;
       this.horizWalls[i][this.size-1] = true;
     }
-    this.createTank("player");
-    this.createTank("AI");
+    this.createTank("Player", true);
+    this.createTank("AI", true);
+    clearInterval(this.timer);
+    this.timer = setInterval(this.handleFrame.bind(this), 20);
+
   }
 
   addDot(x,y){
@@ -42,7 +51,8 @@ export default class Map{
     dot.css({left: x + "px", top: y+"px"});
     $("#map").append(dot);
   }
-  createTank(type){
+
+  createTank(type, dodge){
     let id = this.tanks.length;
     this.map.append(
       `<div id='tank${id}' class='tank ${TANKCOLORS[id]}'></div>`
@@ -57,14 +67,27 @@ export default class Map{
       map: this,
       type,
       detectCollision: this.detectCollision.bind(this),
-      generateBullet: this.generateBullet.bind(this)
+      generateBullet: this.generateBullet.bind(this),
     });
+    let controller;
+    if (type === "AI"){
+      controller = this.AIBuilder.randAI(tank);
+      window.controller = controller;
+      tank.controller = controller;
+    }else{
+      // controller = new AIController(tank, this, true);
+      // window.controller = this.controller;
+      // tank.controller = controller;
+
+      controller = new KeyboardController2(tank.actions);
+    }
     this.tanks.push(tank);
   }
 
 
   generateBullet(xPos, yPos, dir, tankId){
-    let id = this.bullets.size;
+    let id = this.bulletId;
+    this.bulletId ++;
     this.map.append(`<div id='bullet${id}' class='bullet'></div>`);
     let bullet = new Bullet({
       xPos,
@@ -74,6 +97,7 @@ export default class Map{
       id,
       tankId
     });
+
     this.bullets.add(bullet);
   }
 
@@ -127,71 +151,84 @@ export default class Map{
     }
   }
   updateScores(id){
+    let result = (id === 1) ? "WIN" : "LOSS";
+    this.AIBuilder.alertResult(result);
     this.scores[id]++;
     $("#score"+id).html(this.scores[id]);
   }
 
   detectCollision(x, y, size, type){
     //center x and y
-    if(x < 0) return "VERT_COLLISION";
-    if(y < 0) return "HORIZ_COLLISION";
+    // if (type === "AI") return;
+    if(x < 0) return ["VERT_COLLISION", -x];
+    if(y < 0) return ["HORIZ_COLLISION", -y];
     x = x + size/2;
     y = y + size/2;
-
 
     let gridX = Math.floor(x/this.resolution);
 
     let gridY = Math.floor(y/this.resolution);
 
     let topLeft = [
-      [gridX-1, gridY-1],
-      [gridX-1, gridY-1],
       [gridX, gridY-1],
-      [gridX-1, gridY]
-    ]
+      [gridX-1, gridY],
+      [gridX-1, gridY-1],
+      [gridX-1, gridY-1],
+    ];
 
     let topRight = [
+      [gridX, gridY-1],
+      [gridX, gridY],
       [gridX+1, gridY-1],
       [gridX, gridY-1],
-      [gridX, gridY-1],
-      [gridX, gridY]
-    ]
+    ];
 
     let bottomRight = [
+      [gridX, gridY],
+      [gridX, gridY],
       [gridX+1, gridY],
       [gridX, gridY+1],
-      [gridX, gridY],
-      [gridX, gridY]
-    ]
+    ];
 
     let bottomLeft = [
+      [gridX, gridY],
+      [gridX-1, gridY],
       [gridX-1, gridY],
       [gridX-1, gridY+1],
-      [gridX, gridY],
-      [gridX-1, gridY]
-    ]
+    ];
 
     let quadStr = (resolution/2 > y%resolution) ? 'top' : 'bottom';
     quadStr += (resolution/2 > x%resolution) ? 'Left' : 'Right';
-    let quad = eval(quadStr)
+    let quad = eval(quadStr);
 
     let collision;
 
-    for (let i = 0; i < 4 && !collision; i++){
-      let [gridX, gridY] = quad[i];
+    for (let i = 0; i < 4; i++){
+      let [curX, curY] = quad[i];
       let walls, wallType;
-      if (i % 2 == 0) {
+      if (i % 2 === 0) {
         walls = this.horizWalls;
         wallType = "HORIZ";
       } else{
         walls = this.vertWalls;
         wallType = "VERT";
       }
-      let collisionType = (i === 1 || i == 2) ? "HORIZ_COLLISION" : "VERT_COLLISION";
-
-      if (walls[gridX][gridY]){
-        let rect = wallRect(wallType, gridX, gridY);
-        collision = this.checkRectCollision(x,y, size, rect) ? collisionType : null;
+      let collisionType = (i === 0 || i === 3) ? "HORIZ_COLLISION" : "VERT_COLLISION";
+      try{
+        if (walls[curX][curY]){
+          let rect = wallRect(wallType, curX, curY);
+          let collisionResult = this.checkRectCollision(x,y, size, rect);
+          if (collision && (collisionResult || collisionResult === 0 )){
+            if (collision[0] === collisionType ){
+              console.log("DUB COLLISION");
+              return "DUB_COLlISION";
+            }
+          }
+          collision = (collisionResult || collisionResult === 0 ) ? [collisionType, collisionResult] : collision;
+        }
+      }
+      catch(e){
+        console.log(e);
       }
     }
 
@@ -200,7 +237,7 @@ export default class Map{
       type === "TEST_BULLET") && !collision){
         collision = this.checkTankCollision(x,y,size,type);
       }
-    return collision;
+    return collision || false;
   }
 
   checkRectCollision(x,y,size, rect){
@@ -209,8 +246,9 @@ export default class Map{
     let closestY = clamp(y, top, bottom);
     let distX = x - closestX;
     let distY = y - closestY;
-    let distSq = distX ** 2 + distY ** 2;
-    return (distSq < (size/2) ** 2);
+    // let distSq = distX ** 2 + distY ** 2;
+    let dist = distance(x, y, closestX, closestY);
+    return (dist < size/2) ? dist : false;
   }
 
 
@@ -221,7 +259,6 @@ export default class Map{
       let dist = distance(x, y, tankPos[0], tankPos[1]);
       if (dist < (size + tank.size)/2){
           if (type === "BULLET"){
-            debugger
             this.updateScores((tank.id + 1 )%2);
             this.resetMap();
           }

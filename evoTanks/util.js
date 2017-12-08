@@ -12,8 +12,8 @@ export function distance(ax, ay, bx, by){
 
 
 export function randPoint(size, resolution){
-  return [rand(0,size)*resolution + 10,
-    rand(0,size)*resolution +10];
+  return [rand(0,size)*resolution + 17,
+    rand(0,size)*resolution +17];
 }
 
 export function clamp(val, min, max){
@@ -36,4 +36,4 @@ export function wallRect(type, gridX, gridY){
   }
 }
 
-export const resolution = 100;
+export const resolution = 80;
