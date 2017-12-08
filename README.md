@@ -17,6 +17,7 @@ evoTanks is a cross between a 2d tank shooter game and a genetics simulation. At
    + Defensiveness (bullet path prediction)
  + Tank genetic "mating"
  
+ ![screenshot](https://raw.githubusercontent.com/jcompagni10/EvoTank/master/assets/img/game.png)
  
   ### AI
   At its base the Tanki's AI is built with path-finding(breadth first search), targeting, and bullet avoidance logic. On top of this, the AI also has a number of adjustable traits wich modulate its agressiveness, sensitivity to incoming bullets, and targeting range. For the first 10 rounds the game generates AI with randomly selected traits. After a base population has been established winning AI are allowed to pass on their genes sucessssive generations through a genetic inheritance algorithm. Overtime the AI i able to effectively adapt its behvaviour to a given style of play.
