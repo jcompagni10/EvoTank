@@ -252,178 +252,6 @@ module.exports = baseGetTag;
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var listCacheClear = __webpack_require__(48),
-    listCacheDelete = __webpack_require__(49),
-    listCacheGet = __webpack_require__(50),
-    listCacheHas = __webpack_require__(51),
-    listCacheSet = __webpack_require__(52);
-
-/**
- * Creates an list cache object.
- *
- * @private
- * @constructor
- * @param {Array} [entries] The key-value pairs to cache.
- */
-function ListCache(entries) {
-  var index = -1,
-      length = entries == null ? 0 : entries.length;
-
-  this.clear();
-  while (++index < length) {
-    var entry = entries[index];
-    this.set(entry[0], entry[1]);
-  }
-}
-
-// Add methods to `ListCache`.
-ListCache.prototype.clear = listCacheClear;
-ListCache.prototype['delete'] = listCacheDelete;
-ListCache.prototype.get = listCacheGet;
-ListCache.prototype.has = listCacheHas;
-ListCache.prototype.set = listCacheSet;
-
-module.exports = ListCache;
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var eq = __webpack_require__(4);
-
-/**
- * Gets the index at which the `key` is found in `array` of key-value pairs.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {*} key The key to search for.
- * @returns {number} Returns the index of the matched value, else `-1`.
- */
-function assocIndexOf(array, key) {
-  var length = array.length;
-  while (length--) {
-    if (eq(array[length][0], key)) {
-      return length;
-    }
-  }
-  return -1;
-}
-
-module.exports = assocIndexOf;
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var getNative = __webpack_require__(1);
-
-/* Built-in method references that are verified to be native. */
-var nativeCreate = getNative(Object, 'create');
-
-module.exports = nativeCreate;
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isKeyable = __webpack_require__(73);
-
-/**
- * Gets the data for `map`.
- *
- * @private
- * @param {Object} map The map to query.
- * @param {string} key The reference key.
- * @returns {*} Returns the map data.
- */
-function getMapData(map, key) {
-  var data = map.__data__;
-  return isKeyable(key)
-    ? data[typeof key == 'string' ? 'string' : 'hash']
-    : data.map;
-}
-
-module.exports = getMapData;
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
-var isArray = Array.isArray;
-
-module.exports = isArray;
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isFunction = __webpack_require__(15),
-    isLength = __webpack_require__(32);
-
-/**
- * Checks if `value` is array-like. A value is considered array-like if it's
- * not a function and has a `value.length` that's an integer greater than or
- * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
- * @example
- *
- * _.isArrayLike([1, 2, 3]);
- * // => true
- *
- * _.isArrayLike(document.body.children);
- * // => true
- *
- * _.isArrayLike('abc');
- * // => true
- *
- * _.isArrayLike(_.noop);
- * // => false
- */
-function isArrayLike(value) {
-  return value != null && isLength(value.length) && !isFunction(value);
-}
-
-module.exports = isArrayLike;
-
-
-/***/ }),
-/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -470,6 +298,178 @@ function wallRect(type, gridX, gridY) {
 
 const resolution = 80;
 /* harmony export (immutable) */ __webpack_exports__["e"] = resolution;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var listCacheClear = __webpack_require__(48),
+    listCacheDelete = __webpack_require__(49),
+    listCacheGet = __webpack_require__(50),
+    listCacheHas = __webpack_require__(51),
+    listCacheSet = __webpack_require__(52);
+
+/**
+ * Creates an list cache object.
+ *
+ * @private
+ * @constructor
+ * @param {Array} [entries] The key-value pairs to cache.
+ */
+function ListCache(entries) {
+  var index = -1,
+      length = entries == null ? 0 : entries.length;
+
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+
+// Add methods to `ListCache`.
+ListCache.prototype.clear = listCacheClear;
+ListCache.prototype['delete'] = listCacheDelete;
+ListCache.prototype.get = listCacheGet;
+ListCache.prototype.has = listCacheHas;
+ListCache.prototype.set = listCacheSet;
+
+module.exports = ListCache;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var eq = __webpack_require__(4);
+
+/**
+ * Gets the index at which the `key` is found in `array` of key-value pairs.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {*} key The key to search for.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function assocIndexOf(array, key) {
+  var length = array.length;
+  while (length--) {
+    if (eq(array[length][0], key)) {
+      return length;
+    }
+  }
+  return -1;
+}
+
+module.exports = assocIndexOf;
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getNative = __webpack_require__(1);
+
+/* Built-in method references that are verified to be native. */
+var nativeCreate = getNative(Object, 'create');
+
+module.exports = nativeCreate;
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isKeyable = __webpack_require__(73);
+
+/**
+ * Gets the data for `map`.
+ *
+ * @private
+ * @param {Object} map The map to query.
+ * @param {string} key The reference key.
+ * @returns {*} Returns the map data.
+ */
+function getMapData(map, key) {
+  var data = map.__data__;
+  return isKeyable(key)
+    ? data[typeof key == 'string' ? 'string' : 'hash']
+    : data.map;
+}
+
+module.exports = getMapData;
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
+
+module.exports = isArray;
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isFunction = __webpack_require__(15),
+    isLength = __webpack_require__(32);
+
+/**
+ * Checks if `value` is array-like. A value is considered array-like if it's
+ * not a function and has a `value.length` that's an integer greater than or
+ * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+ * @example
+ *
+ * _.isArrayLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLike(document.body.children);
+ * // => true
+ *
+ * _.isArrayLike('abc');
+ * // => true
+ *
+ * _.isArrayLike(_.noop);
+ * // => false
+ */
+function isArrayLike(value) {
+  return value != null && isLength(value.length) && !isFunction(value);
+}
+
+module.exports = isArrayLike;
 
 
 /***/ }),
@@ -11043,7 +11043,7 @@ class PathFinder {
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ListCache = __webpack_require__(6),
+var ListCache = __webpack_require__(7),
     stackClear = __webpack_require__(53),
     stackDelete = __webpack_require__(54),
     stackGet = __webpack_require__(55),
@@ -11260,7 +11260,7 @@ module.exports = Uint8Array;
 
 var baseTimes = __webpack_require__(93),
     isArguments = __webpack_require__(30),
-    isArray = __webpack_require__(10),
+    isArray = __webpack_require__(11),
     isBuffer = __webpack_require__(17),
     isIndex = __webpack_require__(31),
     isTypedArray = __webpack_require__(19);
@@ -11648,7 +11648,7 @@ module.exports = getPrototype;
 
 var arrayLikeKeys = __webpack_require__(29),
     baseKeysIn = __webpack_require__(122),
-    isArrayLike = __webpack_require__(11);
+    isArrayLike = __webpack_require__(12);
 
 /**
  * Creates an array of the own and inherited enumerable property names of `object`.
@@ -11730,14 +11730,14 @@ __WEBPACK_IMPORTED_MODULE_1_jquery___default()(() => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_jquery__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tank__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__bullet__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__keyboard_controller1__ = __webpack_require__(106);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__keyboard_controller2__ = __webpack_require__(133);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ai_builder__ = __webpack_require__(136);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ai_builder__ = __webpack_require__(134);
 
 
 
@@ -12215,7 +12215,7 @@ var Stack = __webpack_require__(23),
     equalByTag = __webpack_require__(82),
     equalObjects = __webpack_require__(85),
     getTag = __webpack_require__(101),
-    isArray = __webpack_require__(10),
+    isArray = __webpack_require__(11),
     isBuffer = __webpack_require__(17),
     isTypedArray = __webpack_require__(19);
 
@@ -12318,7 +12318,7 @@ module.exports = listCacheClear;
 /* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(7);
+var assocIndexOf = __webpack_require__(8);
 
 /** Used for built-in method references. */
 var arrayProto = Array.prototype;
@@ -12359,7 +12359,7 @@ module.exports = listCacheDelete;
 /* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(7);
+var assocIndexOf = __webpack_require__(8);
 
 /**
  * Gets the list cache value for `key`.
@@ -12384,7 +12384,7 @@ module.exports = listCacheGet;
 /* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(7);
+var assocIndexOf = __webpack_require__(8);
 
 /**
  * Checks if a list cache value for `key` exists.
@@ -12406,7 +12406,7 @@ module.exports = listCacheHas;
 /* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(7);
+var assocIndexOf = __webpack_require__(8);
 
 /**
  * Sets the list cache `key` to `value`.
@@ -12438,7 +12438,7 @@ module.exports = listCacheSet;
 /* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ListCache = __webpack_require__(6);
+var ListCache = __webpack_require__(7);
 
 /**
  * Removes all key-value entries from the stack.
@@ -12523,7 +12523,7 @@ module.exports = stackHas;
 /* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ListCache = __webpack_require__(6),
+var ListCache = __webpack_require__(7),
     Map = __webpack_require__(14),
     MapCache = __webpack_require__(26);
 
@@ -12781,7 +12781,7 @@ module.exports = getValue;
 /***/ (function(module, exports, __webpack_require__) {
 
 var Hash = __webpack_require__(66),
-    ListCache = __webpack_require__(6),
+    ListCache = __webpack_require__(7),
     Map = __webpack_require__(14);
 
 /**
@@ -12845,7 +12845,7 @@ module.exports = Hash;
 /* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(8);
+var nativeCreate = __webpack_require__(9);
 
 /**
  * Removes all key-value entries from the hash.
@@ -12889,7 +12889,7 @@ module.exports = hashDelete;
 /* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(8);
+var nativeCreate = __webpack_require__(9);
 
 /** Used to stand-in for `undefined` hash values. */
 var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -12925,7 +12925,7 @@ module.exports = hashGet;
 /* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(8);
+var nativeCreate = __webpack_require__(9);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -12954,7 +12954,7 @@ module.exports = hashHas;
 /* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(8);
+var nativeCreate = __webpack_require__(9);
 
 /** Used to stand-in for `undefined` hash values. */
 var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -12983,7 +12983,7 @@ module.exports = hashSet;
 /* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(9);
+var getMapData = __webpack_require__(10);
 
 /**
  * Removes `key` and its value from the map.
@@ -13028,7 +13028,7 @@ module.exports = isKeyable;
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(9);
+var getMapData = __webpack_require__(10);
 
 /**
  * Gets the map value for `key`.
@@ -13050,7 +13050,7 @@ module.exports = mapCacheGet;
 /* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(9);
+var getMapData = __webpack_require__(10);
 
 /**
  * Checks if a map value for `key` exists.
@@ -13072,7 +13072,7 @@ module.exports = mapCacheHas;
 /* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(9);
+var getMapData = __webpack_require__(10);
 
 /**
  * Sets the map `key` to `value`.
@@ -13510,7 +13510,7 @@ module.exports = getAllKeys;
 /***/ (function(module, exports, __webpack_require__) {
 
 var arrayPush = __webpack_require__(88),
-    isArray = __webpack_require__(10);
+    isArray = __webpack_require__(11);
 
 /**
  * The base implementation of `getAllKeys` and `getAllKeysIn` which uses
@@ -13659,7 +13659,7 @@ module.exports = stubArray;
 
 var arrayLikeKeys = __webpack_require__(29),
     baseKeys = __webpack_require__(99),
-    isArrayLike = __webpack_require__(11);
+    isArrayLike = __webpack_require__(12);
 
 /**
  * Creates an array of the own enumerable property names of `object`.
@@ -14220,7 +14220,7 @@ var assignMergeValue = __webpack_require__(36),
     copyArray = __webpack_require__(114),
     initCloneObject = __webpack_require__(115),
     isArguments = __webpack_require__(30),
-    isArray = __webpack_require__(10),
+    isArray = __webpack_require__(11),
     isArrayLikeObject = __webpack_require__(117),
     isBuffer = __webpack_require__(17),
     isFunction = __webpack_require__(15),
@@ -14485,7 +14485,7 @@ module.exports = baseCreate;
 /* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArrayLike = __webpack_require__(11),
+var isArrayLike = __webpack_require__(12),
     isObjectLike = __webpack_require__(3);
 
 /**
@@ -15034,7 +15034,7 @@ module.exports = shortOut;
 /***/ (function(module, exports, __webpack_require__) {
 
 var eq = __webpack_require__(4),
-    isArrayLike = __webpack_require__(11),
+    isArrayLike = __webpack_require__(12),
     isIndex = __webpack_require__(31),
     isObject = __webpack_require__(2);
 
@@ -15131,12 +15131,98 @@ class KeyboardController2 {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util_js__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ai_controller__ = __webpack_require__(135);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(6);
+
+
+
+class AIBuilder {
+  constructor(map) {
+    this.aiStore = [];
+    this.winners = [[]];
+    this.curGeneration = 0;
+    this.map = map;
+    this.count = 0;
+    this.state = "random seeding";
+    this.genSize = 2;
+  }
+
+  randTraits() {
+    let traits = {};
+    traits["fireInterval"] = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(5, 20);
+    traits["bulletAwareness"] = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(10, 200);
+    traits["targetAwareness"] = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(10, 200);
+    return traits;
+  }
+  alertResult(result) {
+    this.aiStore[this.count][1] = result;
+    if (result === "WIN") {
+      this.winners[this.curGeneration].push(this.aiStore[this.count]);
+    }
+    this.count++;
+  }
+  randAI(tank) {
+    let traits = this.randTraits();
+    this.aiStore.push([traits]);
+    return new __WEBPACK_IMPORTED_MODULE_0__ai_controller__["a" /* default */](tank, this.map, traits);
+  }
+
+  nextGeneration() {
+    this.curGeneration++;
+    console.log("ON TO GEN: " + this.curGeneration);
+    this.winners[this.curGeneration] = [];
+    if (this.state === "random seeding") {
+      this.state = "generation " + this.curGeneration;
+    }
+  }
+
+  newAI(tank) {
+    if (this.state === "random seeding") {
+      if (this.winners[0].length <= this.genSize) {
+        return this.randAI(tank);
+      } else {
+        this.nextGeneration();
+      }
+    }
+    if (this.winners[this.curGeneration].length > this.genSize) {
+      this.nextGeneration();
+    }
+    let rand1 = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(this.genSize - 1);
+    let rand2 = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(this.genSize - 1);
+    let trait1 = this.winners[this.curGeneration - 1][rand1][0];
+    let trait2 = this.winners[this.curGeneration - 1][rand2][0];
+    return this.breed(trait1, trait2, tank);
+  }
+
+  breed(traits1, traits2, tank) {
+    let fireIntervalRange = [traits1["fireInterval"], traits2["fireInterval"]];
+    let bulletAwarenessRange = [traits1["bulletAwareness"], traits2["bulletAwareness"]];
+    let targetAwarenessRange = [traits1["targetAwareness"], traits2["targetAwareness"]];
+    let traitRange = [fireIntervalRange, bulletAwarenessRange, targetAwarenessRange].map(traits => traits.sort((a, b) => a - b));
+
+    let newTraits = {
+      fireInterval: Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(...traitRange[0]),
+      bulletAwareness: Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(...traitRange[1]),
+      targetAwareness: Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(...traitRange[2])
+    };
+    this.aiStore.push([newTraits]);
+    return new __WEBPACK_IMPORTED_MODULE_0__ai_controller__["a" /* default */](tank, this.map, newTraits);
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = AIBuilder;
+
+
+/***/ }),
+/* 135 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util_js__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_merge__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_merge___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_merge__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__pathFinder_path_finder__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__test_bullet__ = __webpack_require__(135);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__util__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__test_bullet__ = __webpack_require__(136);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__util__ = __webpack_require__(6);
 
 
 
@@ -15354,7 +15440,7 @@ class AIController {
 
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15401,86 +15487,6 @@ class TestBullet extends __WEBPACK_IMPORTED_MODULE_0__bullet__["a" /* default */
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = TestBullet;
-
-
-/***/ }),
-/* 136 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ai_controller__ = __webpack_require__(134);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(12);
-
-
-
-class AIBuilder {
-  constructor(map) {
-    this.aiStore = [];
-    this.winners = [[]];
-    this.curGeneration = 0;
-    this.map = map;
-    this.count = 0;
-    this.state = "random seeding";
-  }
-
-  randTraits() {
-    let traits = {};
-    traits["fireInterval"] = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(5, 20);
-    traits["bulletAwareness"] = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(10, 200);
-    traits["targetAwareness"] = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(10, 200);
-    this.aiStore.push([traits]);
-    return traits;
-  }
-  alertResult(result) {
-    this.aiStore[this.count][1] = result;
-    if (result === "WIN") {
-      this.winners[this.curGeneration].push(this.aiStore[this.count]);
-    }
-    this.count++;
-  }
-  randAI(tank) {
-    return new __WEBPACK_IMPORTED_MODULE_0__ai_controller__["a" /* default */](tank, this.map, this.randTraits());
-  }
-
-  nextGeneration() {
-    this.curGeneration++;
-    console.log("ON TO GEN: " + this.curGeneration);
-    this.winners[this.curGeneration] = [];
-    if (this.state === "random seeding") {
-      this.state = "generation " + this.curGeneration;
-    }
-  }
-
-  newAI(tank) {
-    if (this.state === "random seeding") {
-      if (this.winners[0].length < 7) ;
-      return this.randAI(tank);
-    } else {
-      this.nextGeneration();
-    }
-    if (this.winners[this.curGeneration >= 7]) {
-      this.nextGeneration();
-    }
-    let trait1 = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(this.winners[this.curGeneration][Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(7)]);
-    let trait2 = Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(this.winners[this.curGeneration][Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(7)]);
-    return this.breed(trait1, trait2, tank);
-  }
-
-  breed(traits1, traits2, tank) {
-    let fireIntervalRange = [traits1["fireInterval"], traits2["fireInterval"]];
-    let bulletAwarenessRange = [traits1["bulletAwareness"], traits2["bulletAwareness"]];
-    let targetAwarenessRange = [traits1["targetAwareness"], traits2["targetAwareness"]];
-    let traitRange = [fireIntervalRange, bulletAwarenessRange, targetAwarenessRange].map(traits => traits.sort((a, b) => a - b));
-
-    let newTraits = {
-      fireInterval: Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(...traitRange[0]),
-      bulletAwareness: Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(...traitRange[1]),
-      targetAwareness: Object(__WEBPACK_IMPORTED_MODULE_1__util__["c" /* rand */])(...traitRange[2])
-    };
-    return new __WEBPACK_IMPORTED_MODULE_0__ai_controller__["a" /* default */](tank, this.map, this.newTraits);
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = AIBuilder;
 
 
 /***/ })
